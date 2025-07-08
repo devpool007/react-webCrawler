@@ -1,12 +1,14 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Plus, Search, Filter, RefreshCw, Trash2 } from 'lucide-react';
 import { URLTable } from '../components/URLTable';
 import { AddURLModal } from '../components/AddURLModal';
 import { useURLs } from '../hooks/useURLs';
 import { usePolling } from '../hooks/usePolling';
+// import { useToastContext } from '../hooks/useToastContext';
 import type { TableSort, URLItem } from '../types';
 
 export const Dashboard = () => {
+  // const toast = useToastContext();
   const [showAddModal, setShowAddModal] = useState(false);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
@@ -17,6 +19,7 @@ export const Dashboard = () => {
   const {
     urls,
     loading,
+    error,
     pagination,
     refresh,
     deleteURL,
@@ -52,8 +55,10 @@ export const Dashboard = () => {
       try {
         await bulkDelete(selectedURLs);
         setSelectedURLs([]);
+        // toast.success('URLs deleted successfully');
       } catch (error) {
         console.error('Bulk delete failed:', error);
+        // toast.error('Failed to delete URLs', 'Please try again');
       }
     }
   };
@@ -64,8 +69,10 @@ export const Dashboard = () => {
     try {
       await bulkRerun(selectedURLs);
       setSelectedURLs([]);
+      // toast.success('URLs queued for crawling');
     } catch (error) {
       console.error('Bulk rerun failed:', error);
+      // toast.error('Failed to queue URLs for crawling', 'Please try again');
     }
   };
 
@@ -87,6 +94,14 @@ export const Dashboard = () => {
     setSort(newSort);
     setCurrentPage(1); // Reset to first page when sorting changes
   };
+
+  // Show error toast if there's an error
+  useEffect(() => {
+    if (error) {
+      console.error('Error loading URLs:', error);
+      // toast.error('Failed to load URLs', error);
+    }
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-gray-50">

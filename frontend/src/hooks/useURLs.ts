@@ -14,6 +14,7 @@ interface UseURLsOptions {
 export const useURLs = (options: UseURLsOptions = {}) => {
   const [urls, setUrls] = useState<URLItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState<PaginatedResponse<URLItem>>({
     data: [],
     page: 1,
@@ -24,6 +25,7 @@ export const useURLs = (options: UseURLsOptions = {}) => {
 
   const fetchURLs = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const response: PaginatedResponse<URLItem> = await apiService.getURLs({
         page: options.page || 1,
@@ -42,8 +44,10 @@ export const useURLs = (options: UseURLsOptions = {}) => {
         total: response.total,
         total_pages: response.total_pages,
       });
-    } catch (error) {
-      console.error('Failed to fetch URLs:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch URLs';
+      setError(errorMessage);
+      console.error('Failed to fetch URLs:', err);
       setUrls([]);
       setPagination({
         data: [],
@@ -128,6 +132,7 @@ export const useURLs = (options: UseURLsOptions = {}) => {
   return {
     urls,
     loading,
+    error,
     pagination,
     refresh,
     deleteURL,
