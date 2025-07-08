@@ -1,0 +1,23 @@
+# Backend
+/backend/tmp/
+/backend/logs/
+/backend/webcrawler
+/backend/*.log
+/backend/.env
+
+# Frontend
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.env
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
