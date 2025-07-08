@@ -9,6 +9,7 @@ import type {
   CrawlResult,
   PaginatedResponse,
   SuccessResponse,
+  BrokenLink,
 } from '../types';
 
 class ApiService {
@@ -100,6 +101,16 @@ class ApiService {
 
   async getResults(id: number): Promise<CrawlResult> {
     const response: AxiosResponse<CrawlResult> = await this.api.get(`/urls/${id}/results`);
+    return response.data;
+  }
+
+  async rerunURL(id: number): Promise<SuccessResponse> {
+    const response: AxiosResponse<SuccessResponse> = await this.api.put(`/urls/${id}/rerun`);
+    return response.data;
+  }
+
+  async getBrokenLinks(resultId: number): Promise<BrokenLink[]> {
+    const response: AxiosResponse<BrokenLink[]> = await this.api.get(`/results/${resultId}/broken-links`);
     return response.data;
   }
 
