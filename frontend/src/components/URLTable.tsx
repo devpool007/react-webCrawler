@@ -45,7 +45,7 @@ export const URLTable: React.FC<URLTableProps> = ({
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      onSelectURLs(urls.map(url => url.id));
+      onSelectURLs(urls?.map(url => url.id) || []);
     } else {
       onSelectURLs([]);
     }
@@ -105,8 +105,8 @@ export const URLTable: React.FC<URLTableProps> = ({
     return sort.direction === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />;
   };
 
-  const isAllSelected = urls.length > 0 && selectedURLs.length === urls.length;
-  const isIndeterminate = selectedURLs.length > 0 && selectedURLs.length < urls.length;
+  const isAllSelected = urls?.length > 0 && selectedURLs.length === urls?.length;
+  const isIndeterminate = selectedURLs.length > 0 && selectedURLs.length < (urls?.length || 0);
 
   return (
     <div className="card">
@@ -167,7 +167,7 @@ export const URLTable: React.FC<URLTableProps> = ({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {loading && urls.length === 0 ? (
+            {loading && (!urls || urls.length === 0) ? (
               <tr>
                 <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
                   <div className="flex items-center justify-center">
@@ -176,14 +176,14 @@ export const URLTable: React.FC<URLTableProps> = ({
                   </div>
                 </td>
               </tr>
-            ) : urls.length === 0 ? (
+            ) : (!urls || urls.length === 0) ? (
               <tr>
                 <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
                   No URLs found. Add your first URL to get started.
                 </td>
               </tr>
             ) : (
-              urls.map((url) => (
+              urls?.map((url) => (
                 <tr key={url.id} className="table-row">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <input

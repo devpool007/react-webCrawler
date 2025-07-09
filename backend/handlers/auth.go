@@ -7,11 +7,12 @@ import (
 	"strconv"
 	"time"
 
+	"webcrawler/database"
+	"webcrawler/models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
-	"webcrawler/database"
-	"webcrawler/models"
 )
 
 func Login(c *gin.Context) {
@@ -125,7 +126,7 @@ func Register(c *gin.Context) {
 
 func GetURLs(c *gin.Context) {
 	userID := c.GetInt("user_id")
-	
+
 	// Get query parameters
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "10"))
@@ -144,7 +145,7 @@ func GetURLs(c *gin.Context) {
 		LEFT JOIN crawl_results r ON u.id = r.url_id
 		WHERE u.user_id = ?
 	`
-	
+
 	args := []interface{}{userID}
 
 	if search != "" {

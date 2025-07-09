@@ -5,15 +5,16 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
 	"webcrawler/crawler"
 	"webcrawler/database"
 	"webcrawler/models"
+
+	"github.com/gin-gonic/gin"
 )
 
 func CreateURL(c *gin.Context) {
 	userID := c.GetInt("user_id")
-	
+
 	var req models.URLRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
@@ -304,7 +305,7 @@ func GetResults(c *gin.Context) {
 
 func BulkDeleteURLs(c *gin.Context) {
 	userID := c.GetInt("user_id")
-	
+
 	var req models.BulkRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
@@ -323,7 +324,7 @@ func BulkDeleteURLs(c *gin.Context) {
 	// Build query with placeholders
 	query := "DELETE FROM urls WHERE user_id = ? AND id IN ("
 	args := []interface{}{userID}
-	
+
 	for i, id := range req.IDs {
 		if i > 0 {
 			query += ","
@@ -350,7 +351,7 @@ func BulkDeleteURLs(c *gin.Context) {
 
 func BulkRerunURLs(c *gin.Context) {
 	userID := c.GetInt("user_id")
-	
+
 	var req models.BulkRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
@@ -369,7 +370,7 @@ func BulkRerunURLs(c *gin.Context) {
 	// Get URLs to rerun
 	query := "SELECT id, url FROM urls WHERE user_id = ? AND id IN ("
 	args := []interface{}{userID}
-	
+
 	for i, id := range req.IDs {
 		if i > 0 {
 			query += ","
@@ -404,7 +405,7 @@ func BulkRerunURLs(c *gin.Context) {
 		if err != nil {
 			continue
 		}
-		
+
 		// Start crawling in background
 		go crawler.CrawlURL(url.ID, url.URL)
 	}

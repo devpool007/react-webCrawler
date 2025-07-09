@@ -1,21 +1,24 @@
-import { useState, useMemo, useEffect } from 'react';
-import { Plus, Search, Filter, RefreshCw, Trash2 } from 'lucide-react';
-import { URLTable } from '../components/URLTable';
-import { AddURLModal } from '../components/AddURLModal';
-import { useURLs } from '../hooks/useURLs';
-import { usePolling } from '../hooks/usePolling';
+import { useState, useMemo, useEffect } from "react";
+import { Plus, Search, Filter, RefreshCw, Trash2 } from "lucide-react";
+import { URLTable } from "../components/URLTable";
+import { AddURLModal } from "../components/AddURLModal";
+import { useURLs } from "../hooks/useURLs";
+import { usePolling } from "../hooks/usePolling";
 // import { useToastContext } from '../hooks/useToastContext';
-import type { TableSort, URLItem } from '../types';
+import type { TableSort, URLItem } from "../types";
 
 export const Dashboard = () => {
   // const toast = useToastContext();
   const [showAddModal, setShowAddModal] = useState(false);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("");
   const [selectedURLs, setSelectedURLs] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sort, setSort] = useState<TableSort>({ column: 'created_at', direction: 'desc' });
-  
+  const [sort, setSort] = useState<TableSort>({
+    column: "created_at",
+    direction: "desc",
+  });
+
   const {
     urls,
     loading,
@@ -38,7 +41,9 @@ export const Dashboard = () => {
 
   // Check if there are any active crawls
   const hasActiveCrawls = useMemo(() => {
-    return urls.some((url: URLItem) => url.status === 'running' || url.status === 'queued');
+    return urls?.some(
+      (url: URLItem) => url.status === "running" || url.status === "queued"
+    ) || false;
   }, [urls]);
 
   // Use polling to update data when there are active crawls
@@ -50,14 +55,18 @@ export const Dashboard = () => {
 
   const handleBulkDelete = async () => {
     if (selectedURLs.length === 0) return;
-    
-    if (window.confirm(`Are you sure you want to delete ${selectedURLs.length} URL(s)?`)) {
+
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${selectedURLs.length} URL(s)?`
+      )
+    ) {
       try {
         await bulkDelete(selectedURLs);
         setSelectedURLs([]);
         // toast.success('URLs deleted successfully');
       } catch (error) {
-        console.error('Bulk delete failed:', error);
+        console.error("Bulk delete failed:", error);
         // toast.error('Failed to delete URLs', 'Please try again');
       }
     }
@@ -65,13 +74,13 @@ export const Dashboard = () => {
 
   const handleBulkRerun = async () => {
     if (selectedURLs.length === 0) return;
-    
+
     try {
       await bulkRerun(selectedURLs);
       setSelectedURLs([]);
       // toast.success('URLs queued for crawling');
     } catch (error) {
-      console.error('Bulk rerun failed:', error);
+      console.error("Bulk rerun failed:", error);
       // toast.error('Failed to queue URLs for crawling', 'Please try again');
     }
   };
@@ -82,7 +91,7 @@ export const Dashboard = () => {
   };
 
   const handleStatusFilterChange = (value: string) => {
-    setStatusFilter(value === 'all' ? '' : value);
+    setStatusFilter(value === "all" ? "" : value);
     setCurrentPage(1); // Reset to first page when filter changes
   };
 
@@ -98,26 +107,28 @@ export const Dashboard = () => {
   // Show error toast if there's an error
   useEffect(() => {
     if (error) {
-      console.error('Error loading URLs:', error);
+      console.error("Error loading URLs:", error);
       // toast.error('Failed to load URLs', error);
     }
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className=" bg-gray-200">
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="px-4 py-6 sm:px-0">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Web Crawler Dashboard</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Web Crawler Dashboard
+              </h1>
               <p className="mt-2 text-sm text-gray-600">
                 Manage and analyze your website crawling tasks
               </p>
             </div>
             <button
               onClick={() => setShowAddModal(true)}
-              className="btn-primary inline-flex items-center"
+              className="inline-flex items-center hover:text-gray-400"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add URL
@@ -146,7 +157,7 @@ export const Dashboard = () => {
                 <div className="relative">
                   <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <select
-                    value={statusFilter || 'all'}
+                    value={statusFilter || "all"}
                     onChange={(e) => handleStatusFilterChange(e.target.value)}
                     className="input-field pl-10 pr-8 appearance-none bg-white"
                   >
@@ -166,10 +177,12 @@ export const Dashboard = () => {
                   disabled={loading}
                   className="btn-secondary inline-flex items-center"
                 >
-                  <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                  <RefreshCw
+                    className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+                  />
                   Refresh
                 </button>
-                
+
                 {selectedURLs.length > 0 && (
                   <>
                     <button

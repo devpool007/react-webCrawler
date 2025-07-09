@@ -9,7 +9,6 @@ import type {
   CrawlResult,
   PaginatedResponse,
   SuccessResponse,
-  BrokenLink,
 } from '../types';
 
 class ApiService {
@@ -53,12 +52,29 @@ class ApiService {
   // Auth endpoints
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     const response: AxiosResponse<AuthResponse> = await this.api.post('/auth/login', credentials);
+    // Store token after successful login
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+    }
     return response.data;
   }
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
     const response: AxiosResponse<AuthResponse> = await this.api.post('/auth/register', userData);
+    // Store token after successful registration
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+    }
     return response.data;
+  }
+
+  logout(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+
+  isAuthenticated(): boolean {
+    return !!localStorage.getItem('token');
   }
 
   // URL endpoints
@@ -105,12 +121,7 @@ class ApiService {
   }
 
   async rerunURL(id: number): Promise<SuccessResponse> {
-    const response: AxiosResponse<SuccessResponse> = await this.api.put(`/urls/${id}/rerun`);
-    return response.data;
-  }
-
-  async getBrokenLinks(resultId: number): Promise<BrokenLink[]> {
-    const response: AxiosResponse<BrokenLink[]> = await this.api.get(`/results/${resultId}/broken-links`);
+    const response: AxiosResponse<SuccessResponse> = await this.api.put(`/urls/${id}/start`);
     return response.data;
   }
 

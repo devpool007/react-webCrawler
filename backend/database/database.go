@@ -13,7 +13,7 @@ var DB *sql.DB
 
 func InitDB() {
 	var err error
-	
+
 	// Build connection string
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		getEnv("DB_USER", "root"),

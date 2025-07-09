@@ -5,9 +5,10 @@ import (
 	"os"
 	"strings"
 
+	"webcrawler/models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"webcrawler/models"
 )
 
 func AuthMiddleware() gin.HandlerFunc {
@@ -54,7 +55,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok {
 			userID := int(claims["user_id"].(float64))
 			username := claims["username"].(string)
-			
+
 			// Set user info in context
 			c.Set("user_id", userID)
 			c.Set("username", username)

@@ -8,9 +8,10 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/net/html"
 	"webcrawler/database"
 	"webcrawler/models"
+
+	"golang.org/x/net/html"
 )
 
 type CrawlData struct {
@@ -26,7 +27,7 @@ type CrawlData struct {
 
 func CrawlURL(urlID int, targetURL string) {
 	log.Printf("Starting crawl for URL ID %d: %s", urlID, targetURL)
-	
+
 	// Create HTTP client with timeout
 	client := &http.Client{
 		Timeout: 30 * time.Second,
@@ -126,14 +127,14 @@ func extractHTMLVersion(n *html.Node) string {
 			}
 		}
 	}
-	
+
 	// Check for XHTML or older versions in attributes
 	for _, attr := range n.Attr {
 		if attr.Key == "xmlns" || strings.Contains(attr.Val, "xhtml") {
 			return "XHTML"
 		}
 	}
-	
+
 	return "HTML5" // Default to HTML5
 }
 
@@ -141,7 +142,7 @@ func extractTextContent(n *html.Node) string {
 	if n.Type == html.TextNode {
 		return strings.TrimSpace(n.Data)
 	}
-	
+
 	var text strings.Builder
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		text.WriteString(extractTextContent(c))
@@ -178,46 +179,62 @@ func analyzeLink(n *html.Node, data *CrawlData, baseURL *url.URL) {
 		data.ExternalLinks++
 	}
 
-	// Check if link is accessible (basic check)
-	if !isAccessibleLink(resolvedURL.String()) {
+	// Check if link is accessible and get detailed info
+	statusCode, errorMsg := checkLinkAccessibility(resolvedURL.String())
+	if statusCode >= 400 || statusCode == 0 {
 		data.InaccessibleLinks++
 		data.BrokenLinks = append(data.BrokenLinks, models.BrokenLink{
 			URL:          resolvedURL.String(),
-			StatusCode:   0, // Will be updated with actual status
-			ErrorMessage: "Link check failed",
+			StatusCode:   statusCode,
+			ErrorMessage: errorMsg,
 		})
 	}
 }
 
-func isAccessibleLink(linkURL string) bool {
+func checkLinkAccessibility(linkURL string) (int, string) {
 	// Skip certain types of links
 	if strings.HasPrefix(linkURL, "mailto:") ||
 		strings.HasPrefix(linkURL, "tel:") ||
 		strings.HasPrefix(linkURL, "javascript:") ||
 		strings.HasPrefix(linkURL, "#") {
-		return true
+		return 200, "OK" // Consider these as accessible
 	}
 
 	// Create a quick HEAD request to check accessibility
 	client := &http.Client{
-		Timeout: 5 * time.Second,
+		Timeout: 10 * time.Second,
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			// Allow up to 5 redirects
+			if len(via) >= 5 {
+				return fmt.Errorf("stopped after 5 redirects")
+			}
+			return nil
+		},
 	}
 
 	resp, err := client.Head(linkURL)
 	if err != nil {
-		return false
+		// Try GET request if HEAD fails
+		resp, err = client.Get(linkURL)
+		if err != nil {
+			return 0, fmt.Sprintf("Request failed: %v", err)
+		}
 	}
 	defer resp.Body.Close()
 
-	// Consider 2xx and 3xx status codes as accessible
-	return resp.StatusCode < 400
+	// Return the actual status code and status text
+	if resp.StatusCode >= 400 {
+		return resp.StatusCode, resp.Status
+	}
+
+	return resp.StatusCode, "OK"
 }
 
 func isLoginForm(n *html.Node) bool {
 	// Look for common login form indicators
 	hasPasswordField := false
 	hasUsernameField := false
-	
+
 	// Check form attributes
 	for _, attr := range n.Attr {
 		if attr.Key == "id" || attr.Key == "class" || attr.Key == "name" {
@@ -232,7 +249,7 @@ func isLoginForm(n *html.Node) bool {
 
 	// Check for password and username/email fields
 	checkInputs(n, &hasPasswordField, &hasUsernameField)
-	
+
 	return hasPasswordField && hasUsernameField
 }
 
@@ -251,7 +268,7 @@ func checkInputs(n *html.Node, hasPassword, hasUsername *bool) {
 		if inputType == "password" {
 			*hasPassword = true
 		}
-		
+
 		if inputType == "text" || inputType == "email" {
 			if strings.Contains(inputName, "user") ||
 				strings.Contains(inputName, "email") ||
