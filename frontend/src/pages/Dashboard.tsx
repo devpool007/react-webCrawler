@@ -128,7 +128,7 @@ export const Dashboard = () => {
             </div>
             <button
               onClick={() => setShowAddModal(true)}
-              className="inline-flex items-center hover:text-gray-400"
+              className="inline-flex items-center hover:text-blue-500 cursor-pointer"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add URL
@@ -154,12 +154,12 @@ export const Dashboard = () => {
                 </div>
 
                 {/* Status Filter */}
-                <div className="relative">
+                <div className="relative hover:border-blue-500 border-2 rounded-md ">
                   <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <select
                     value={statusFilter || "all"}
                     onChange={(e) => handleStatusFilterChange(e.target.value)}
-                    className="input-field pl-10 pr-8 appearance-none bg-white"
+                    className="w-full input-field pl-10 pr-8 appearance-none bg-white cursor-pointer rounded-md"
                   >
                     <option value="all">All Status</option>
                     <option value="queued">Queued</option>
@@ -175,7 +175,7 @@ export const Dashboard = () => {
                 <button
                   onClick={refresh}
                   disabled={loading}
-                  className="btn-secondary inline-flex items-center"
+                  className="btn-secondary inline-flex items-center cursor-pointer hover:text-blue-500"
                 >
                   <RefreshCw
                     className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}

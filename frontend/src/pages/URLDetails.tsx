@@ -210,7 +210,7 @@ export const URLDetails = () => {
           <p className="text-gray-600 mb-4">{error || "URL not found"}</p>
           <button
             onClick={() => navigate("/dashboard")}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
           >
             Back to Dashboard
           </button>
@@ -226,7 +226,7 @@ export const URLDetails = () => {
         <div className="flex items-center space-x-4">
           <button
             onClick={() => navigate("/dashboard")}
-            className="flex items-center text-gray-600 hover:text-gray-900"
+            className="flex items-center text-gray-600 hover:text-gray-900 cursor-pointer"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back to Dashboard
@@ -257,22 +257,24 @@ export const URLDetails = () => {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <span
-              className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                url.status
-              )}`}
-            >
-              {getStatusIcon(url.status)}
-              <span className="ml-2 capitalize">{url.status}</span>
-            </span>
-            <a
-              href={url.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800"
-            >
-              <ExternalLink className="w-5 h-5" />
-            </a>
+            <div className="flex flex-col md:flex-row md:items-center md:space-x-2 space-y-2 md:space-y-0">
+              <span
+                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                  url.status
+                )} md:px-3 md:py-1 md:text-sm`}
+              >
+                {getStatusIcon(url.status)}
+                <span className="ml-1 capitalize md:ml-2">{url.status}</span>
+              </span>
+              <a
+                href={url.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pl-2 text-blue-600 hover:text-blue-800"
+              >
+                <ExternalLink className="w-4 h-4 md:w-5 md:h-5" />
+              </a>
+            </div>
           </div>
         </div>
 
