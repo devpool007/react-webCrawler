@@ -53,7 +53,7 @@ export const AddURLModal: React.FC<AddURLModalProps> = ({
           <button
             onClick={handleClose}
             disabled={isLoading}
-            className="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150"
+            className="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-700 transition ease-in-out duration-150 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -75,7 +75,7 @@ export const AddURLModal: React.FC<AddURLModalProps> = ({
               placeholder="https://example.com"
               required
               disabled={isLoading}
-              className="input-field md:w-sm"
+              className="input-field md:w-sm p-1 rounded-md border-2 hover:border-blue-500"
             />
             <p className="mt-1 text-sm text-gray-500">
               Enter the complete URL including http:// or https://
@@ -93,14 +93,14 @@ export const AddURLModal: React.FC<AddURLModalProps> = ({
               type="button"
               onClick={handleClose}
               disabled={isLoading}
-              className="btn-secondary"
+              className="btn-secondary hover:text-red-400 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading || !url.trim()}
-              className=""
+              className=" hover:text-blue-500 cursor-pointer"
             >
               {isLoading ? (
                 <>
